@@ -5,7 +5,7 @@ const Markupcard = () => {
   return (
     <>
         <div>Markupcard</div>
-        <Link href = "https://assuredpsychology.com/">
+        <Link href = "https://google.com/">
         <div class="max-w-sm rounded overflow-hidden shadow-lg">
             <div class="px-6 py-4">
                     <div class="font-bold text-xl mb-2">Assured Psychology Markup</div>
