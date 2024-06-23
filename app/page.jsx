@@ -9,9 +9,7 @@ export default function Home() {
     <>
       
       <Markupcard />
-      <Markupiframe src =  "https://google.com" title = " Assured Psychology" />
 
-    
     </>
   )
 }
