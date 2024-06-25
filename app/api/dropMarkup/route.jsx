@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 export async function GET(request) {
   try {
     const result =
-      await sql`CREATE TABLE MarkupTable ( Name varchar(255), URL varchar(255) );`;
+      await sql`DROP TABLE MarkupTable;`;
     return NextResponse.json({ result }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error }, { status: 500 });
