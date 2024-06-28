@@ -1,11 +1,11 @@
 import React from 'react'
-import Markupcard from '../components/Markupcard'
+import MarkupList from '../components/Markuplist'
 
 const page = () => {
   return (
     <div>
         <h1> List of Markups</h1>
-        <Markupcard />
+        <MarkupList />
     </div>
   )
 }

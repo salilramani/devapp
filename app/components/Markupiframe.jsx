@@ -1,19 +1,13 @@
-import React from 'react'
+import React from 'react';
 
+const Markupiframe = ({ markupUrl }) => {
+  if (!markupUrl) return <p>No URL provided</p>;
 
-const Markupiframe = ({src,title}) => {
-    
   return (
-    <iframe 
-    src = {src}
-    title= {title}
-    width = "100%"
-    height = "1500px"
-    style = {{border:'none'}}
-    >
+    <div>
+      <iframe src={markupUrl} width="100%" height="600px" title="Markup" />
+    </div>
+  );
+};
 
-    </iframe>
-  )
-}
-
-export default Markupiframe
+export default Markupiframe;
