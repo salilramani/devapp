@@ -1,5 +1,5 @@
 import React from 'react'
-import MarkupList from '../components/Markuplist'
+import MarkupList from '../components/MarkupList'
 
 const page = () => {
   return (
