@@ -31,9 +31,15 @@ const MarkupList = () => {
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <div className="markup-list">
+    <div className="markup-list grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
       {data.map((item) => (
-        <Markupcard key={item.id} id={item.id} user_name={item.user_name} user_email={item.user_email} markup_url={item.markup_url} />
+        <Markupcard 
+          key={item.id} 
+          id={item.id} 
+          user_name={item.user_name} 
+          user_email={item.user_email} 
+          markup_url={item.markup_url} 
+        />
       ))}
     </div>
   );
