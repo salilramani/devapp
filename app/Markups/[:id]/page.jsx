@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { useParams } from 'next/navigation';
-import Markupiframe from '@/app/components/Markupiframe';
 
 const Page = () => {
   const params = useParams();
@@ -23,7 +22,7 @@ const Page = () => {
             throw new Error('Error fetching markup URL');
           }
           const result = await response.json();
-          setMarkupUrl(`/api/proxy?url=${encodeURIComponent(result.markup_url)}`);
+          setMarkupUrl(`https://app.rubick.io/api/proxy?url=${encodeURIComponent(result.markup_url)}`);
         }
       } catch (error) {
         setError(error.message);

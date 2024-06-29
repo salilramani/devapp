@@ -4,8 +4,8 @@ import httpProxy from 'http-proxy';
 // Create a proxy server
 const proxy = httpProxy.createProxyServer({ changeOrigin: true });
 
-export const GET = async (req, res) => {
-  const { searchParams } = new URL(req.url);
+export async function GET(request) {
+  const { searchParams } = new URL(request.url);
   const targetUrl = searchParams.get('url');
 
   if (!targetUrl) {
@@ -13,8 +13,7 @@ export const GET = async (req, res) => {
   }
 
   return new Promise((resolve, reject) => {
-    req.url = targetUrl;
-    proxy.web(req, res, { target: targetUrl }, (error) => {
+    proxy.web(request, request.res, { target: targetUrl }, (error) => {
       if (error) {
         reject(NextResponse.json({ error: 'Proxy error', details: error.message }, { status: 500 }));
       }
