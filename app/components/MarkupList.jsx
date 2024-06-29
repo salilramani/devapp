@@ -1,4 +1,4 @@
-"use client";  // Mark this component as a client component
+"use client";
 
 import { useEffect, useState } from 'react';
 import Markupcard from './Markupcard';
@@ -27,11 +27,29 @@ const MarkupList = () => {
     fetchData();
   }, []);
 
+  const handleDelete = async (id) => {
+    try {
+      const response = await fetch(`/api/deleteMarkup?id=${id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        setData(data.filter(item => item.id !== id));
+      } else {
+        const errorData = await response.json();
+        alert(`Error: ${errorData.message || 'Failed to delete markup'}`);
+      }
+    } catch (error) {
+      console.error('Error deleting markup:', error);
+      alert('Failed to delete markup');
+    }
+  };
+
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <div className="markup-list grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
+    <div className="markup-list flex flex-wrap justify-center">
       {data.map((item) => (
         <Markupcard 
           key={item.id} 
@@ -39,6 +57,7 @@ const MarkupList = () => {
           user_name={item.user_name} 
           user_email={item.user_email} 
           markup_url={item.markup_url} 
+          onDelete={handleDelete} // Passing handleDelete as onDelete prop
         />
       ))}
     </div>
