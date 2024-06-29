@@ -11,7 +11,7 @@ const MarkupList = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('/api/getAllMarkups');
+        const response = await fetch('/api/getAllMarkups', { cache: 'no-store' });
         if (!response.ok) {
           throw new Error('Error fetching data');
         }
@@ -49,7 +49,7 @@ const MarkupList = () => {
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <div className="markup-list flex flex-wrap justify-center">
+    <div className="markup-list grid gap-4 sm:grid-cols-2 lg:grid-cols-3 p-4">
       {data.map((item) => (
         <Markupcard 
           key={item.id} 

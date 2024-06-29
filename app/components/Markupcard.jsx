@@ -7,9 +7,9 @@ import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 
 const Markupcard = ({ id, user_name, user_email, markup_url, onDelete }) => {
   return (
-    <div className="max-w-sm rounded overflow-hidden shadow-lg m-4 relative">
+    <div className="max-w-sm w-full rounded overflow-hidden shadow-lg relative p-4 bg-white">
       <Link href={`/Markups/${id}`}>
-        <div className="px-6 py-4">
+        <div className="px-6 py-4 cursor-pointer">
           <div className="font-bold text-xl mb-2">Name: {user_name} Markup</div>
           <h2>{user_email}</h2>
           <h2>{markup_url}</h2>
@@ -18,7 +18,7 @@ const Markupcard = ({ id, user_name, user_email, markup_url, onDelete }) => {
       </Link>
       <button 
         onClick={() => onDelete(id)} // Calling onDelete with the card's id
-        className="absolute top-2 right-2 text-red-600 hover:text-red-800"
+        className="absolute top-2 right-2 text-black-300 font-bold py-1 px-2 rounded"
       >
         <FontAwesomeIcon icon={faTrashAlt} />
       </button>
