@@ -13,12 +13,8 @@ const proxy = createProxyMiddleware({
   },
 });
 
-export const GET = async (req, res) => {
+export const GET = (req, res) => {
   return proxy(req, res);
 };
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
+export const dynamic = 'force-dynamic';
