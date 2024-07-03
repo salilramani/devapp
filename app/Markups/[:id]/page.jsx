@@ -1,7 +1,6 @@
-
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import Markupiframe from '@/app/components/Markupiframe';
 import { useParams } from 'next/navigation';
 
@@ -12,8 +11,7 @@ const Page = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [mode, setMode] = useState('browse');
-  console.log(params);
-  console.log(id);
+  const iframeRef = useRef(null);
 
   useEffect(() => {
     const fetchMarkupUrl = async () => {
@@ -26,6 +24,7 @@ const Page = () => {
           }
           const result = await response.json();
           console.log(`Fetched Markup URL: ${result.markup_url}`); // Log the fetched URL for debugging
+          // Use the proxy route with the fetched markup URL
           setMarkupUrl(`/api/proxy?url=${encodeURIComponent(result.markup_url)}`);
         }
       } catch (error) {
@@ -39,7 +38,13 @@ const Page = () => {
   }, [id]);
 
   const toggleMode = () => {
-    setMode((prevMode) => (prevMode === 'browse' ? 'comment' : 'browse'));
+    setMode((prevMode) => {
+      const newMode = prevMode === 'browse' ? 'comment' : 'browse';
+      if (iframeRef.current) {
+        iframeRef.current.contentWindow.clickBlockingEnabled = newMode === 'comment';
+      }
+      return newMode;
+    });
   };
 
   if (isLoading) return <p>Loading...</p>;
@@ -49,10 +54,11 @@ const Page = () => {
     <div>
       <h1>Markup for ID: {id}</h1>
       <button onClick={toggleMode} className="bg-blue-500 text-white px-4 py-2 rounded">
-          {mode === 'browse' ? 'Switch to Comment Mode' : 'Switch to Browse Mode'}
-        </button>
-        
-          <Markupiframe markupUrl={markupUrl} />
+        {mode === 'browse' ? 'Switch to Comment Mode' : 'Switch to Browse Mode'}
+      </button>
+      <div className='bg-black'>
+        <Markupiframe markupUrl={markupUrl} iframeRef={iframeRef} />
+      </div>
     </div>
   );
 };

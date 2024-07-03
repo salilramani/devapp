@@ -1,4 +1,3 @@
-// app/api/proxy.js
 import axios from 'axios';
 
 export const GET = async (req) => {
@@ -18,15 +17,6 @@ export const GET = async (req) => {
       '</body>',
       `
       <style>
-        .click-blocker {
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background: rgba(255, 255, 255, 0);
-          z-index: 9999;
-        }
         .click-marker {
           width: 20px;
           height: 20px;
@@ -39,7 +29,11 @@ export const GET = async (req) => {
         }
       </style>
       <script>
+        window.clickBlockingEnabled = false;
+
         function addClickMarker(event) {
+          if (!window.clickBlockingEnabled) return;
+
           event.preventDefault();
           event.stopPropagation();
 
@@ -51,17 +45,79 @@ export const GET = async (req) => {
           console.log('Circle added at:', event.pageX, event.pageY);
         }
 
+        function interceptLinks() {
+          document.querySelectorAll('a').forEach(anchor => {
+            anchor.addEventListener('click', function(event) {
+              if (window.clickBlockingEnabled) {
+                // When click blocking is enabled, show the marker and prevent navigation
+                addClickMarker(event);
+              } else {
+                // When click blocking is disabled, proxy the navigation
+                event.preventDefault();
+                event.stopPropagation();
+                const targetUrl = event.currentTarget.href;
+                const proxiedUrl = '/api/proxy?url=' + encodeURIComponent(targetUrl);
+                window.location.href = proxiedUrl;
+              }
+            });
+          });
+
+          document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', function(event) {
+              if (window.clickBlockingEnabled) {
+                // When click blocking is enabled, show the marker and prevent form submission
+                addClickMarker(event);
+              } else {
+                // When click blocking is disabled, proxy the form submission
+                event.preventDefault();
+                event.stopPropagation();
+                const formAction = event.currentTarget.action;
+                const formMethod = event.currentTarget.method.toUpperCase();
+                const formData = new FormData(event.currentTarget);
+
+                const proxiedUrl = '/api/proxy?url=' + encodeURIComponent(formAction);
+
+                fetch(proxiedUrl, {
+                  method: formMethod,
+                  body: formData
+                }).then(response => response.text()).then(html => {
+                  document.open();
+                  document.write(html);
+                  document.close();
+                  interceptLinks(); // Reapply interception after new content is loaded
+                });
+              }
+            });
+          });
+        }
+
+        function toggleClickBlocking(enabled) {
+          if (enabled) {
+            document.body.addEventListener('click', addClickMarker, true);
+            document.documentElement.addEventListener('click', addClickMarker, true);
+            window.addEventListener('click', addClickMarker, true);
+          } else {
+            document.body.removeEventListener('click', addClickMarker, true);
+            document.documentElement.removeEventListener('click', addClickMarker, true);
+            window.removeEventListener('click', addClickMarker, true);
+          }
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
-          const blocker = document.createElement('div');
-          blocker.className = 'click-blocker';
-          document.body.appendChild(blocker);
+          Object.defineProperty(window, 'clickBlockingEnabled', {
+            set: function(value) {
+              this._clickBlockingEnabled = value;
+              toggleClickBlocking(value);
+            },
+            get: function() {
+              return this._clickBlockingEnabled;
+            }
+          });
 
-          blocker.addEventListener('click', addClickMarker);
-
-          document.body.addEventListener('click', addClickMarker, true);
-          document.documentElement.addEventListener('click', addClickMarker, true);
-          window.addEventListener('click', addClickMarker, true);
+          interceptLinks(); // Initial call to intercept links
         });
+
+        window.addEventListener('popstate', interceptLinks); // Intercept links on history navigation
       </script>
       </body>`
     );
