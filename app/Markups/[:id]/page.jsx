@@ -1,27 +1,32 @@
-'use client';
 
-import { useEffect, useState, useRef } from 'react';
+"use client";
+
+import { useEffect, useState } from 'react';
+import Markupiframe from '@/app/components/Markupiframe';
 import { useParams } from 'next/navigation';
 
 const Page = () => {
-  const params = useParams();
-  const id = params[':id'];
+  const params = useParams(); // Use useParams to get the dynamic segments
+  const id = params[":id"]; // Destructure 'id' from params
   const [markupUrl, setMarkupUrl] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [annotations, setAnnotations] = useState([]);
-  const iframeRef = useRef(null);
+  const [mode, setMode] = useState('browse');
+  console.log(params);
+  console.log(id);
 
   useEffect(() => {
     const fetchMarkupUrl = async () => {
       try {
         if (id) {
+          console.log(`Fetching markup URL for ID: ${id}`); // Log the ID for debugging
           const response = await fetch(`/api/getMarkupById?id=${id}`);
           if (!response.ok) {
             throw new Error('Error fetching markup URL');
           }
           const result = await response.json();
-          setMarkupUrl(`/proxy?url=${encodeURIComponent(result.markup_url)}`);
+          console.log(`Fetched Markup URL: ${result.markup_url}`); // Log the fetched URL for debugging
+          setMarkupUrl(`/api/proxy?url=${encodeURIComponent(result.markup_url)}`);
         }
       } catch (error) {
         setError(error.message);
@@ -33,47 +38,21 @@ const Page = () => {
     fetchMarkupUrl();
   }, [id]);
 
-  const handleIframeLoad = () => {
-    const iframe = iframeRef.current;
-    if (iframe) {
-      const iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
-
-      iframeDocument.addEventListener('mouseover', (e) => {
-        e.target.style.outline = '2px dashed grey';
-      });
-
-      iframeDocument.addEventListener('mouseout', (e) => {
-        e.target.style.outline = '';
-      });
-
-      iframeDocument.addEventListener('click', (e) => {
-        const icon = iframeDocument.createElement('img');
-        icon.src = '/pin-icon.png';
-        icon.alt = 'Pin';
-        icon.style.position = 'absolute';
-        icon.style.left = `${e.pageX}px`;
-        icon.style.top = `${e.pageY}px`;
-        icon.style.width = '20px';
-        icon.style.height = '20px';
-        icon.style.transform = 'translate(-50%, -50%)';
-        icon.style.zIndex = '2';
-        iframeDocument.body.appendChild(icon);
-        setAnnotations([...annotations, { x: e.pageX, y: e.pageY }]);
-      });
-    }
+  const toggleMode = () => {
+    setMode((prevMode) => (prevMode === 'browse' ? 'comment' : 'browse'));
   };
 
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <div style={{ position: 'relative', width: '100%', height: '600px' }}>
-      <iframe
-        ref={iframeRef}
-        src={markupUrl}
-        onLoad={handleIframeLoad}
-        style={{ width: '100%', height: '100%', border: 'none' }}
-      />
+    <div>
+      <h1>Markup for ID: {id}</h1>
+      <button onClick={toggleMode} className="bg-blue-500 text-white px-4 py-2 rounded">
+          {mode === 'browse' ? 'Switch to Comment Mode' : 'Switch to Browse Mode'}
+        </button>
+        
+          <Markupiframe markupUrl={markupUrl} />
     </div>
   );
 };
