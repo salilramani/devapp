@@ -11,7 +11,7 @@ const MarkupList = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('/api/getAllMarkups', { cache: 'no-store' });
+        const response = await fetch('/api/getAllMarkups', { next: { revalidate: 3600 }});
         if (!response.ok) {
           throw new Error('Error fetching data');
         }
